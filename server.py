@@ -41,14 +41,28 @@ def book(competition,club):
         return render_template('welcome.html', club=club, competitions=competitions)
 
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
+
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
+    club_points = int(club['points'])  # club points
     placesRequired = int(request.form['places'])
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    flash('Great-booking complete!')
-    return render_template('welcome.html', club=club, competitions=competitions)
+
+    # club point sold is less than requested place (we assume 1 place needed 1 point)
+    if placesRequired > club_points:
+        flash('Solde des points insuffisants')
+        return render_template('booking.html', club=club, competition=competition)
+
+    # Requested places greater than what it is available
+    elif placesRequired > int(competition['numberOfPlaces']):
+        flash('Nembre de places demander superieur au place disponible')
+        return render_template('booking.html', club=club, competition=competition)
+
+    else:
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
+        flash('Great-booking complete!')
+        return render_template('welcome.html', club=club, competitions=competitions)
 
 
 # TODO: Add route for points display
