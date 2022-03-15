@@ -26,8 +26,20 @@ def index():
 
 @app.route('/showSummary',methods=['POST'])
 def showSummary():
-    club = [club for club in clubs if club['email'] == request.form['email']][0]
-    return render_template('welcome.html',club=club,competitions=competitions)
+
+    email = request.form['email']
+    # if condition has been integrate to fix issue 1 by checking if club email exist
+    # creating a club email list
+    club_email = []
+    for club in clubs:
+        club_email.append(club["email"])
+    # check if email exist in club email list otherwise display message error
+    if email not in club_email:
+        flash("unknown mail")
+        return render_template('index.html')
+    else:
+        club = [club for club in clubs if club['email'] == request.form['email']][0]
+        return render_template('welcome.html', club=club, competitions=competitions)
 
 
 @app.route('/book/<competition>/<club>')
