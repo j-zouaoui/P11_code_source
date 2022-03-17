@@ -42,7 +42,7 @@ clubs = loadClubs()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', club=clubs)
 
 @app.route('/showSummary',methods=['POST'])
 def showSummary():
@@ -59,8 +59,7 @@ def showSummary():
         return render_template('index.html')
     else:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
-        return render_template('welcome.html', club=club, competitions=competitions)
-
+        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
@@ -75,13 +74,13 @@ def book(competition,club):
         if competition_date_obj < to_day_date:
             flash("date de competition expirer")
             #redirect to showsummary
-            return render_template('welcome.html', club=club, competitions=competitions)
+            return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
             #during test the url end point n ete pas le bon
         else:
             return render_template('booking.html', club=foundClub, competition=foundCompetition)
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
 
 
 @app.route('/purchasePlaces', methods=['POST'])
@@ -116,7 +115,7 @@ def purchasePlaces():
         updated_clubs_list = loadClubs()
         club = [c for c in updated_clubs_list if c['name'] == request.form['club']][0]
         flash('Great-booking complete!')
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html', club=club, competitions=competitions, clubs=updated_clubs_list)
 
 
 
