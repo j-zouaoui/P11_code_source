@@ -71,6 +71,11 @@ def purchasePlaces():
         flash('Nembre de places demander superieur au place disponible')
         return render_template('booking.html', club=club, competition=competition)
 
+    # Fixing issue 3 which define the maximum place to reserve = 12
+    elif placesRequired > 12:
+        flash('Vous pouvez reserver 12 place maximum')
+        return render_template('booking.html', club=club, competition=competition)
+
     else:
         competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
         flash('Great-booking complete!')
