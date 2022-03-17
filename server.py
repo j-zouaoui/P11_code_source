@@ -8,6 +8,25 @@ def loadClubs():
          listOfClubs = json.load(c)['clubs']
          return listOfClubs
 
+def updating_club_score(club_name, updated_club_points):
+    """
+    this function allows to update the club points value by rewriting club json file
+    :param club_name:
+    :param updated_point:
+    :return: clubs.json file updated withe the new value of point
+    """
+    with open('clubs.json', "r+") as c:
+        listOfClubs = json.load(c)['clubs']
+
+        for club in listOfClubs:
+            if club['name'] == club_name:
+                club['points'] = updated_club_points
+                break
+        data = {"clubs": listOfClubs}
+
+        c.seek(0)  # rewind
+        json.dump(data, c)
+        c.truncate()
 
 def loadCompetitions():
     with open('competitions.json') as comps:
@@ -73,6 +92,7 @@ def purchasePlaces():
     club_points = int(club['points'])  # club points
     placesRequired = int(request.form['places'])
 
+
     # club point sold is less than requested place (we assume 1 place needed 1 point)
     if placesRequired > club_points:
         flash('Solde des points insuffisants')
@@ -89,9 +109,15 @@ def purchasePlaces():
         return render_template('booking.html', club=club, competition=competition)
 
     else:
-        competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+        updated_club_points = int(club['points']) - placesRequired
+        club_name = club['name']
+        updating_club_score(club_name, updated_club_points)
+        updated_clubs_list = loadClubs()
+        club = [c for c in updated_clubs_list if c['name'] == request.form['club']][0]
         flash('Great-booking complete!')
         return render_template('welcome.html', club=club, competitions=competitions)
+
 
 
 # TODO: Add route for points display

@@ -63,3 +63,12 @@ def test_booking_expired_date(url):
     response = app.test_client().get(url)
     assert response.status_code == 200
     assert b'date de competition expirer' in response.data
+
+"""@pytest.mark.parametrize("data", [{
+    "competition": "Spring Festival", "club": "Simply Lift", "places": "3" }])"""
+def test_booking_update_sold_points():
+    response = app.test_client().post('/purchasePlaces',
+                                      data={"competition": "Spring Festival", "club": "Simply Lift", "places": "3"})
+    assert response.status_code == 200
+    assert b'Great-booking complete!' in response.data
+
